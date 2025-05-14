@@ -56,6 +56,13 @@ def delete(todo_id):
     todo_to_delete = Todo.query.get_or_404(todo_id)
     db.session.delete(todo_to_delete)
     db.session.commit()
+
+    # Reassign priorities to the remaining items
+    remaining_todos = Todo.query.order_by(Todo.priority).all()
+    for index, todo in enumerate(remaining_todos):
+        todo.priority = index + 1
+    db.session.commit()
+
     return redirect('/')
 
 if __name__ == '__main__':

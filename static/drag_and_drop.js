@@ -82,3 +82,29 @@ function updatePriorityNumbers() {
         }
     });
 }
+
+// Add an event listener to handle delete links
+todoList.addEventListener('click', (e) => {
+    if (e.target.tagName === 'A' && e.target.textContent === 'Delete') {
+        e.preventDefault();
+        const deleteUrl = e.target.href;
+
+        // Send a DELETE request to the server
+        fetch(deleteUrl, { method: 'GET' })
+            .then((response) => {
+                if (response.ok) {
+                    // Remove the deleted item from the DOM
+                    const listItem = e.target.closest('li');
+                    if (listItem) {
+                        listItem.remove();
+                    }
+
+                    // Update the priority numbers in the DOM
+                    updatePriorityNumbers();
+                } else {
+                    console.error('Failed to delete the to-do item');
+                }
+            })
+            .catch((error) => console.error('Error:', error));
+    }
+});
