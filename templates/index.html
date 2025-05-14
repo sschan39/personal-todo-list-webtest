@@ -1,25 +1,47 @@
-<!--templates/index.html-->
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>To-Do List</title>
-        <!--<link rel="stylesheet" href="styles.css">-->
+        <style>
+            .draggable {
+                cursor: move;
+                padding: 10px;
+                margin: 5px 0;
+                background-color: #f9f9f9;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+            }
+            .drag-over {
+                background-color: #e0e0e0;
+            }
+        </style>
     </head>
     <body>
         <h1>To-Do List</h1>
         <form action="/" method="POST">
             <input type="text" name="content" placeholder="Enter a new task" required>
+            <input type="date" name="due_date" placeholder="Due Date" required>
             <button type="submit">Add Task</button>
         </form>
-        <ul>
+        <ul id="todo-list">
             {% for todo in todos %}
-                <li>
+                <li class="draggable" draggable="true" data-id="{{ todo.id }}">
+                    <strong>{{ todo.priority }}.</strong>
                     {{ todo.content }}
+                    <span>Due: {{ todo.due_date }}</span>
+                    <span>
+                        {% if todo.due_date >= current_date %}
+                            ({{ (todo.due_date - current_date).days }} days remaining)
+                        {% else %}
+                            <span style="color: red;">({{ (current_date - todo.due_date).days }} days past due)</span>
+                        {% endif %}
+                    </span>
                     <a href="/delete/{{ todo.id }}">Delete</a>
                 </li>
             {% endfor %}
         </ul>
+        <script src="{{ url_for('static', filename='drag_and_drop.js') }}"></script>
     </body>
 </html>
